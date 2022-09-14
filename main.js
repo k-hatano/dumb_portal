@@ -126,9 +126,9 @@ const server = http.createServer((request, response) => {
 		content += "<div id=\"content\" style=\"width:960px; height:720px; margin: auto; background:#fff; position: absolute; top:0; bottom:0; left:0; right:0;\">";
 		content += "<table style=\"width: 100%; border:0; border-spacing:0; text-shadow:1px 1px 3px #8884;\">";
 		content += "<tr>";
-		content += "<th colspan=\"2\" style=\"color: white; background: linear-gradient(#111, #222); height:48px;\">";
+		content += "<th colspan=\"2\" style=\"color: white; background: #111 linear-gradient(#111, #222); height:60px;\">";
 		content += "<div>";
-		content += "<span id=\"time\" style=\"font-size: x-large; vertical-align: middle;\"></span>";
+		content += "<span id=\"time\" style=\"font-size: xx-large; vertical-align: middle;\"></span>";
 		content += "&nbsp;&nbsp;";
 		content += "<span id=\"lunar\" style=\"background: yellow; width:24px; height: 24px; border-radius: 24px; color: black; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;\">";
 		content += "" + (((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + today.getDate()) +1) % 30);
@@ -137,20 +137,20 @@ const server = http.createServer((request, response) => {
 		content += "</th>";
 		content += "</tr>";
 		content += "<tr>";
-		content += "<td style=\"vertical-align:bottom;\">";
-		content += "<img src=\"" + weatherMapUrl + "\">";
+		content += "<td style=\"text-align: center; vertical-align: middle;\">";
+		content += "<img style=\"max-width: 480px; max-height: 560px;\" src=\"" + weatherMapUrl + "\">";
 		content += "</td>";
 		content += "<td>";
-		content += "<table style=\"width: 360px; height: 588px; border-spacing:0;\">";
+		content += "<table style=\"width: 480px; height: 560px; border-spacing:0;\">";
 		for (let i = 0; i < news.length; i++) {
-			content += "<tr><td style=\"background: linear-gradient(#bbb, #ccc); height:48px;\"><span style=\"padding:8px;\">" + news[i].title + "</span></td></tr>";
+			content += "<tr><td style=\"background: #bbb linear-gradient(#bbb, #ccc); height:48px; font-size: x-large;\"><span style=\"padding:8px;\">" + news[i].title + "</span></td></tr>";
 		}
 		content += "</table>";
 		content += "</td>";
 		content += "</tr>";
 		content += "<tr>";
 		content += "<td colspan=\"2\">";
-		content += "<table style=\"width: 960px; height:84px; text-align: center; border:0; background: linear-gradient(#eee, #fff);\">";
+		content += "<table style=\"font-size: large; width: 960px; height:84px; text-align: center; border:0; background: #eee linear-gradient(#eee, #fff);\">";
 		content += "<tr>";
 		content += "<th rowspan=\"3\">";
 		content += (new Date(weatherInfo.date).getMonth() + 1) + "/" + (new Date(weatherInfo.date).getDate()) + " (" + dateLabels[new Date(weatherInfo.date).getDay()] + ")" + " 発表<br />";
@@ -168,7 +168,7 @@ const server = http.createServer((request, response) => {
 		content += "</tr>";
 		content += "<tr>";
 		for (let i = 0; i < weathers.length; i++) {
-			content += "<td style='font-size: small;'>" + weathers[i].temperature + "</td>";
+			content += "<td>" + weathers[i].temperature + "</td>";
 		}
 		content += "</tr>";
 		content += "</table>";
