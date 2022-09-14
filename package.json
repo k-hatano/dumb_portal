@@ -1,0 +1,16 @@
+{
+  "name": "dumb_portal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.6.1",
+    "jsdom": "^20.0.0",
+    "xml2js": "^0.4.23"
+  }
+}
