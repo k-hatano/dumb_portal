@@ -213,7 +213,7 @@ const server = http.createServer((request, response) => {
 <tr style="background:#111;">
 <th colspan="2" style="color: white; background:#111 linear-gradient(#111, #222); height:60px;">
 <div>
-<span id="time" style="font-size: x-large; vertical-align: middle;"></span>
+<span id="time" style="font-size: xx-large; vertical-align: middle;"></span>
 &nbsp;&nbsp;
 <span id="lunar" style="background: yellow; width:24px; height: 24px; border-radius: 24px; color: black; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
 ${(((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + today.getDate()) +1) % 30)}
@@ -224,11 +224,11 @@ ${(((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + toda
 <tr>
 <td style="text-align: center; vertical-align: middle;">
 <img style="max-width: 360px; max-height: 560px;" src="${weatherMapUrl}">
-<marquee style="font-size: small; text-align: left; padding: 2px; color: red;">${warning}</marquee>
+<marquee style="font-size: medium; text-align: left; padding: 2px; color: red;">${warning}</marquee>
 </td>
 <td>
-<table style="width: 440px; height: 420px; border-spacing:0;">
-${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:36px; font-size: large;'><span style='padding:8px;'>" + n.title + "</span></td></tr>").join('')}
+<table style="width: 440px; height: 420px; border-spacing:0; background: #bbb;">
+${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:36px; font-size: x-large;'><span style='padding:8px;'>" + n.title + "</span></td></tr>").join('')}
 </table>
 </td>
 </tr>
