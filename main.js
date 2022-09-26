@@ -21,18 +21,19 @@ const getWeatherMapPromise = _ => new Promise((resolve, reject) => {
 		res.on("end", _ => {
 			try {
 				let json = JSON.parse(body);
-				weatherMapUrl = "https://www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
-				https.get(weatherMapUrl, res2 => {
-					let body2 = [];
-					res2.on("data", chunk2 => body2.push(chunk2));
-					res2.on("end", _ => {
-						weatherMapUrl = "data:image/png;charset=utf-8;base64," + Buffer.concat(body2).toString('base64');
-						resolve();
-					});
-				}).on("error", error2 => {
-					console.error(error2.message);
-					reject();
-				});
+				weatherMapUrl = "http://www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
+				resolve();
+				// https.get(weatherMapUrl, res2 => {
+				// 	let body2 = [];
+				// 	res2.on("data", chunk2 => body2.push(chunk2));
+				// 	res2.on("end", _ => {
+				// 		weatherMapUrl = "data:image/png;charset=utf-8;base64," + Buffer.concat(body2).toString('base64');
+				// 		resolve();
+				// 	});
+				// }).on("error", error2 => {
+				// 	console.error(error2.message);
+				// 	reject();
+				// });
 			} catch (error) {
 				console.error(error.message);
 				reject();
@@ -207,7 +208,7 @@ const server = http.createServer((request, response) => {
 <title>Dumb Portal</title>
 <style>td{padding:0;}</style>
 </head>
-<body style="background:#aaa; position: relative;">
+<body style="background:#aaa; position: relative; min-height:600px;">
 <div id="content" style="width:800px; height:600px; margin: auto; background:#fff; position: absolute; top:0; bottom:0; left:0; right:0; z-index: 1;">
 <table style="width: 100%; height: 100%; border:0; border-spacing:0; text-shadow:1px 1px 3px #8884;">
 <tr style="background:#111;">
