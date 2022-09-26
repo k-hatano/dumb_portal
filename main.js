@@ -209,9 +209,9 @@ const server = http.createServer((request, response) => {
 </head>
 <body style="background:#aaa; position: relative;">
 <div id="content" style="width:800px; height:600px; margin: auto; background:#fff; position: absolute; top:0; bottom:0; left:0; right:0; z-index: 1;">
-<table style="width: 100%; border:0; border-spacing:0; text-shadow:1px 1px 3px #8884;">
-<tr>
-<th colspan="2" style="color: white; background: #111 linear-gradient(#111, #222); height:60px;">
+<table style="width: 100%; height: 100%; border:0; border-spacing:0; text-shadow:1px 1px 3px #8884;">
+<tr style="background:#111;">
+<th colspan="2" style="color: white; background:#111 linear-gradient(#111, #222); height:60px;">
 <div>
 <span id="time" style="font-size: x-large; vertical-align: middle;"></span>
 &nbsp;&nbsp;
