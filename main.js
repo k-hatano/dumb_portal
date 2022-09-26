@@ -206,6 +206,7 @@ const server = http.createServer((request, response) => {
 <head>
 <meta charset="UTF-8">
 <title>Dumb Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimin-scale=0.5, user-scalable=yes">
 <style>td{padding:0;}</style>
 </head>
 <body style="background:#aaa; position: relative; min-height:600px;">
