@@ -13,6 +13,7 @@ let weathers = [];
 let news = [];
 let whatDays = [];
 let regionCode = undefined;
+let isHttps = false;
 
 const getWeatherMapPromise = _ => new Promise((resolve, reject) => {
 	https.get("https://www.jma.go.jp/bosai/weather_map/data/list.json", res => {
@@ -21,7 +22,8 @@ const getWeatherMapPromise = _ => new Promise((resolve, reject) => {
 		res.on("end", _ => {
 			try {
 				let json = JSON.parse(body);
-				weatherMapUrl = "http://www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
+				let protocol = isHttps ? "https://" : "http://";
+				weatherMapUrl = protocol + "www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
 				resolve();
 				// https.get(weatherMapUrl, res2 => {
 				// 	let body2 = [];
@@ -198,6 +200,8 @@ const stemLabels = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬
 const branchLabels = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
 const server = http.createServer((request, response) => {
+	isHttps = request.url.indexOf("https://") == 0;
+
 	let parsedUrl = url.parse(request.url, true);
 	if (parsedUrl.query.region != undefined) {
 		regionCode = parsedUrl.query.region;
@@ -208,7 +212,6 @@ const server = http.createServer((request, response) => {
 			"Content-Type": "text/html"
 		});
 		let today = new Date();
-		let adjustedTime = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
 
 		let content = `
 <head>
@@ -217,8 +220,8 @@ const server = http.createServer((request, response) => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimin-scale=0.1, user-scalable=yes">
 <style>td{padding:0;}</style>
 </head>
-<body style="background:#aaa; position: relative; min-height:540px;">
-<div id="content" style="width:720px; height:540px; margin: auto; background:#fff; position: absolute; top:0; bottom:0; left:0; right:0; z-index: 1;">
+<body style="background:#aaa; position: relative; min-width: 720px; min-height:500px; text-align: center;">
+<div id="content" style="width:720px; height:500px; margin: auto; background:#fff; position: absolute; top:0; bottom:0; left:0; right:0; z-index: 1; text-align: center;">
 <table style="width: 100%; height: 100%; border:0; border-spacing:0; text-shadow:1px 1px 3px #8884;">
 <tr style="background:#111;">
 <th colspan="2" style="color: white; background:#111 linear-gradient(#111, #222); height:60px;">
@@ -229,28 +232,28 @@ const server = http.createServer((request, response) => {
 ${(((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + today.getDate()) +1) % 30)}
 </span> 
 <span id="stem" style="background: brown; width:24px; height: 24px; color: white; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
-${stemLabels[Math.floor(adjustedTime / 1000 / 60 / 60 / 24 + 7) % 10]}
+${stemLabels[Math.floor(today.getTime() / 1000 / 60 / 60 / 24 + 7) % 10]}
 </span> 
 <span id="branch" style="background: green; width:24px; height: 24px; color: white; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
-${branchLabels[Math.floor(adjustedTime / 1000 / 60 / 60 / 24 + 5) % 12]}
+${branchLabels[Math.floor(today.getTime() / 1000 / 60 / 60 / 24 + 5) % 12]}
 </span>
 </div>
 </th>
 </tr>
 <tr>
 <td style="text-align: center; vertical-align: middle;">
-<img style="max-width: 332px; max-height: 332px;" src="${weatherMapUrl}">
+<img style="max-width: 296px; max-height: 296px;" src="${weatherMapUrl}">
 <marquee style="font-size: medium; text-align: left; padding: 2px; color: red;">${warning}</marquee>
 </td>
 <td>
-<table style="width: 360px; height: 360px; border-spacing:0; background: #bbb;">
-${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:32px; font-size: large;'><span style='padding:2px 8px;'>" + n.title + "</span></td></tr>").join('')}
+<table style="width: 360px; height: 320px; border-spacing:0; background: #bbb;">
+${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:28px; font-size: large;'><span style='padding:2px 8px;'>" + n.title + "</span></td></tr>").join('')}
 </table>
 </td>
 </tr>
 <tr>
 <td colspan="2">
-<table style="font-size: large; width: 720px; height:84px; text-align: left; border:0; background: #eee linear-gradient(#eee, #fff); border-spacing: 0;">
+<table style="font-size: medium; width: 720px; height:92px; text-align: left; border:0; background: #eee linear-gradient(#eee, #fff); border-spacing: 0;">
 <tr>
 <th rowspan="3" style="text-align: center; background: #ddd;">
 ${(new Date(weatherInfo.date).getMonth() + 1) + "/" + (new Date(weatherInfo.date).getDate()) + " (" + dateLabels[new Date(weatherInfo.date).getDay()] + ")" + " 発表"}<br />
@@ -263,13 +266,13 @@ ${weathers.map(w => "<th style='padding: 2px 8px; white-space: nowrap;'>" + ((ne
 </tr>
 <tr>
 <td colspan="2">
-<div style="background: #444; color: white; text-align: center; font-size: small; height: 27px; line-height: 27px;">Powered by <a href="https://www.jma.go.jp/jma/index.html" target="_blank" style="color: white;">Japan Meteorological Agency</a> & <a href="https://news.yahoo.co.jp/" target="_blank" style="color: white;">Yahoo! News</a></div>
+<div style="background: #444; color: white; text-align: center; font-size: small; height: 28px; line-height: 27px;">Powered by <a href="https://www.jma.go.jp/jma/index.html" target="_blank" style="color: white;">Japan Meteorological Agency</a> & <a href="https://news.yahoo.co.jp/" target="_blank" style="color: white;">Yahoo! News</a></div>
 </td>
 </tr>
 </table>
 </div>
 <script>
-var dateLabels=['日','月','火','水','木','金','土'];function printTime(){var date = new Date(); document.getElementById('time').innerText=''+(date.getFullYear())+'/'+('00'+(date.getMonth()+1)).slice(-2)+'/'+('00'+(date.getDate())).slice(-2)+'('+dateLabels[date.getDay()]+')'+' '+date.getHours()+':'+('00'+date.getMinutes()).slice(-2)+':'+('00'+date.getSeconds()).slice(-2);  setTimeout(printTime, 1000);}printTime();
+var dateLabels=['日','月','火','水','木','金','土'];function printTime(){setTimeout(printTime, 1000); var date = new Date(); document.getElementById('time').innerText=''+(date.getFullYear())+'/'+('00'+(date.getMonth()+1)).slice(-2)+'/'+('00'+(date.getDate())).slice(-2)+'('+dateLabels[date.getDay()]+')'+' '+date.getHours()+':'+('00'+date.getMinutes()).slice(-2)+':'+('00'+date.getSeconds()).slice(-2);}printTime();
 </script>
 </body>
 		`;
