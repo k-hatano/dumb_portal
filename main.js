@@ -200,7 +200,7 @@ const branchLabels = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '�
 
 function getDefaultContent() {
 	let today = new Date();
-	let todayJST new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
+	let todayJST = new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
 
 	let content = `
 <head>
@@ -271,7 +271,7 @@ var dateLabels=['日','月','火','水','木','金','土'];function printTime(){
 
 function getMobileContent() {
 	let today = new Date();
-	let todayJST new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
+	let todayJST = new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
 
 	let content = `
 <head>
