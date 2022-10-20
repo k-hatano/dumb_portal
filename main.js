@@ -22,8 +22,7 @@ const getWeatherMapPromise = _ => new Promise((resolve, reject) => {
 		res.on("end", _ => {
 			try {
 				let json = JSON.parse(body);
-				let protocol = isHttps ? "https://" : "http://";
-				weatherMapUrl = protocol + "www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
+				weatherMapUrl = "https://www.jma.go.jp/bosai/weather_map/data/png/" + json["near"]["now"][json["near"]["now"].length - 1];
 				resolve();
 				// https.get(weatherMapUrl, res2 => {
 				// 	let body2 = [];
@@ -199,21 +198,10 @@ const dateLabels = ['日', '月', '火', '水', '木', '金', '土'];
 const stemLabels = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const branchLabels = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
-const server = http.createServer((request, response) => {
-	isHttps = request.url.indexOf("https://") == 0;
+function getDefaultContent() {
+	let today = new Date();
 
-	let parsedUrl = url.parse(request.url, true);
-	if (parsedUrl.query.region != undefined) {
-		regionCode = parsedUrl.query.region;
-	}
-
-	const allPromise = Promise.all([getWeatherMapPromise(), getWeatherPromise(), getNewsPromise(), getWarningPromise()]).then(_ => {
-		response.writeHead(200, {
-			"Content-Type": "text/html"
-		});
-		let today = new Date();
-
-		let content = `
+	let content = `
 <head>
 <meta charset="UTF-8">
 <title>Dumb Portal</title>
@@ -242,12 +230,12 @@ ${branchLabels[Math.floor(today.getTime() / 1000 / 60 / 60 / 24 + 5) % 12]}
 </tr>
 <tr>
 <td style="text-align: center; vertical-align: middle;">
-<img style="max-width: 296px; max-height: 296px;" src="${weatherMapUrl}">
+<img width="288px" height="288px" style="max-width: 288px; max-height: 288px;" src="/weather_map.png">
 <marquee style="font-size: medium; text-align: left; padding: 2px; color: red;">${warning}</marquee>
 </td>
 <td>
 <table style="width: 360px; height: 320px; border-spacing:0; background: #bbb;">
-${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:28px; font-size: large;'><span style='padding:2px 8px;'>" + n.title + "</span></td></tr>").join('')}
+${news.map(n => "<tr><td style='background: #bbb linear-gradient(#bbb, #ccc); height:40px; font-size: large;'><span style='padding:2px 8px;'>" + n.title + "</span></td></tr>").join('')}
 </table>
 </td>
 </tr>
@@ -275,17 +263,71 @@ ${weathers.map(w => "<th style='padding: 2px 8px; white-space: nowrap;'>" + ((ne
 var dateLabels=['日','月','火','水','木','金','土'];function printTime(){setTimeout(printTime, 1000); var date = new Date(); document.getElementById('time').innerText=''+(date.getFullYear())+'/'+('00'+(date.getMonth()+1)).slice(-2)+'/'+('00'+(date.getDate())).slice(-2)+'('+dateLabels[date.getDay()]+')'+' '+date.getHours()+':'+('00'+date.getMinutes()).slice(-2)+':'+('00'+date.getSeconds()).slice(-2);}printTime();
 </script>
 </body>
-		`;
+	`;
 
+	return content;
+}
 
-	    response.end(content);
-	    // console.log(`Sent a response : ${content}`);
-	}).catch(error => {
-		response.writeHead(500, {
-			"Content-Type": "text/html"
+const server = http.createServer((request, response) => {
+	isHttps = request.url.indexOf("https://") == 0;
+
+	let parsedUrl = url.parse(request.url, true);
+	if (parsedUrl.query.region != undefined) {
+		regionCode = parsedUrl.query.region;
+	}
+
+	if (parsedUrl.pathname == '/') {
+		const allPromise = Promise.all([getWeatherPromise(), getNewsPromise(), getWarningPromise()]).then(_ => {
+			response.writeHead(200, {
+				"Content-Type": "text/html"
+			});
+
+			let content = getDefaultContent();
+
+		    response.end(content);
+		    // console.log(`Sent a response : ${content}`);
+		}).catch(error => {
+			response.writeHead(500, {
+				"Content-Type": "text/html"
+			});
+			response.end(error.message);
 		});
-		response.end(error.message);
-	});
+		return;
+	}
+
+	if (parsedUrl.pathname == '/weather_map.png') {
+		const allPromise = Promise.all([getWeatherMapPromise()]).then(_ => {
+			https.get(weatherMapUrl, res2 => {
+				let body2 = [];
+				res2.on("data", chunk2 => {
+					body2.push(chunk2);
+				});
+				res2.on("end", _ => {
+					let concatBody2 = Buffer.concat(body2);
+					response.writeHead(200, {
+						"Content-Type": "image/png",
+        				"Content-Length": concatBody2.length
+					});
+					response.end(concatBody2);
+				});
+				res2.on("error", error2 => {
+					console.error(error2.message);
+				})
+			}).on("error", error2 => {
+				console.error(error2.message);
+			});
+		}).catch(error => {
+			response.writeHead(500, {
+				"Content-Type": "text/html"
+			});
+			response.end(error.message);
+		});
+		return;
+	}
+
+	response.writeHead(404);
+	response.end();
+	return;
 });
 
 server.listen(port);
