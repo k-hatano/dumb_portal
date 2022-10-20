@@ -279,7 +279,7 @@ function getMobileContent() {
 <title>Dumb Portal</title>
 </head>
 <body>
-<p><${(date.getFullYear())+'/'+('00'+(date.getMonth()+1)).slice(-2)+'/'+('00'+(date.getDate())).slice(-2)+'('+dateLabels[date.getDay()]+')'}/p>
+<p><${(today.getFullYear())+'/'+('00'+(today.getMonth()+1)).slice(-2)+'/'+('00'+(today.getDate())).slice(-2)+'('+dateLabels[today.getDay()]+')'}/p>
 <h1>ニュース</h1>
 ${news.map(n => "<p>" + n.title + "</p>").join('')}
 <h1>天気</h1>
