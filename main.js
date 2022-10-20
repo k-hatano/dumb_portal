@@ -279,11 +279,15 @@ function getMobileContent() {
 <title>Dumb Portal</title>
 </head>
 <body>
-<p><${(today.getFullYear())+'/'+('00'+(today.getMonth()+1)).slice(-2)+'/'+('00'+(today.getDate())).slice(-2)+'('+dateLabels[today.getDay()]+')'}/p>
+<p>${(today.getFullYear())+'/'+('00'+(today.getMonth()+1)).slice(-2)+'/'+('00'+(today.getDate())).slice(-2)+'('+dateLabels[today.getDay()]+')'}</p>
+<p id="time"></p>
 <h1>ニュース</h1>
 ${news.map(n => "<p>" + n.title + "</p>").join('')}
 <h1>天気</h1>
 ${weathers.map(w => "<h2>" + ((new Date(w.date)).getMonth() + 1) + "/" + (new Date(w.date)).getDate() + " (" + dateLabels[(new Date(w.date)).getDay()] + ")" + "</h2>" + "<p>" + w.name.replaceAll('　',' ') + "</p>" + "<p>" + w.temperature + "</p>").join('')}
+<script>
+function printTime(){setTimeout(printTime, 1000); var date = new Date(); document.getElementById('time').innerText=''+date.getHours()+':'+('00'+date.getMinutes()).slice(-2)+':'+('00'+date.getSeconds()).slice(-2);}printTime();
+</script>
 </body>
 	`;
 
