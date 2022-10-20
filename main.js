@@ -200,6 +200,7 @@ const branchLabels = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '�
 
 function getDefaultContent() {
 	let today = new Date();
+	let todayJST new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
 
 	let content = `
 <head>
@@ -220,10 +221,10 @@ function getDefaultContent() {
 ${(((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + today.getDate()) +1) % 30)}
 </span> 
 <span id="stem" style="background: brown; width:24px; height: 24px; color: white; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
-${stemLabels[Math.floor(today.getTime() / 1000 / 60 / 60 / 24 + 7) % 10]}
+${stemLabels[Math.floor(todayJST.getTime() / 1000 / 60 / 60 / 24 + 7) % 10]}
 </span> 
 <span id="branch" style="background: green; width:24px; height: 24px; color: white; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
-${branchLabels[Math.floor(today.getTime() / 1000 / 60 / 60 / 24 + 5) % 12]}
+${branchLabels[Math.floor(todayJST.getTime() / 1000 / 60 / 60 / 24 + 5) % 12]}
 </span>
 </div>
 </th>
@@ -268,6 +269,27 @@ var dateLabels=['日','月','火','水','木','金','土'];function printTime(){
 	return content;
 }
 
+function getMobileContent() {
+	let today = new Date();
+	let todayJST new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
+
+	let content = `
+<head>
+<meta charset="UTF-8">
+<title>Dumb Portal</title>
+</head>
+<body>
+<p><${(date.getFullYear())+'/'+('00'+(date.getMonth()+1)).slice(-2)+'/'+('00'+(date.getDate())).slice(-2)+'('+dateLabels[date.getDay()]+')'}/p>
+<h1>ニュース</h1>
+${news.map(n => "<p>" + n.title + "</p>").join('')}
+<h1>天気</h1>
+${weathers.map(w => "<h2>" + ((new Date(w.date)).getMonth() + 1) + "/" + (new Date(w.date)).getDate() + " (" + dateLabels[(new Date(w.date)).getDay()] + ")" + "</h2>" + "<p>" + w.name.replaceAll('　',' ') + "</p>" + "<p>" + w.temperature + "</p>").join('')}
+</body>
+	`;
+
+	return content;
+}
+
 const server = http.createServer((request, response) => {
 	isHttps = request.url.indexOf("https://") == 0;
 
@@ -283,6 +305,25 @@ const server = http.createServer((request, response) => {
 			});
 
 			let content = getDefaultContent();
+
+		    response.end(content);
+		    // console.log(`Sent a response : ${content}`);
+		}).catch(error => {
+			response.writeHead(500, {
+				"Content-Type": "text/html"
+			});
+			response.end(error.message);
+		});
+		return;
+	}
+
+	if (parsedUrl.pathname == '/mobile') {
+		const allPromise = Promise.all([getWeatherPromise(), getNewsPromise(), getWarningPromise()]).then(_ => {
+			response.writeHead(200, {
+				"Content-Type": "text/html"
+			});
+
+			let content = getMobileContent();
 
 		    response.end(content);
 		    // console.log(`Sent a response : ${content}`);
