@@ -200,7 +200,7 @@ const branchLabels = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '�
 
 function getDefaultContent() {
 	let today = new Date();
-	let todayJST = new Date(new Date().toLocaleString({ timeZone: 'Asia/Tokyo' }));
+	let todayJST = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
 
 	let content = `
 <head>
@@ -219,7 +219,7 @@ function getDefaultContent() {
 &nbsp;&nbsp;
 <span id="lunar" style="background: yellow; width:24px; height: 24px; border-radius: 24px; color: black; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
 ${(((((today.getYear() + 1900 - 2009) % 19) * 11 + (today.getMonth() + 1) + today.getDate()) +1) % 30)}
-</span> 
+</span>
 <span id="stem" style="background: brown; width:24px; height: 24px; color: white; font-size: small; display: inline-block; text-align: center; vertical-align: middle; line-height: 24px;">
 ${stemLabels[Math.floor(todayJST.getTime() / 1000 / 60 / 60 / 24 + 7) % 10]}
 </span> 
@@ -281,6 +281,8 @@ function getMobileContent() {
 <body>
 <p>${(today.getFullYear())+'/'+('00'+(today.getMonth()+1)).slice(-2)+'/'+('00'+(today.getDate())).slice(-2)+'('+dateLabels[today.getDay()]+')'}</p>
 <p id="time"></p>
+<h1>注意報・警報</h1>
+${warning}
 <h1>ニュース</h1>
 ${news.map(n => "<p>" + n.title + "</p>").join('')}
 <h1>天気</h1>
